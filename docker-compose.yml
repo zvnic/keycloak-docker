@@ -30,8 +30,8 @@ services:
       - DB_PASSWORD=keycloak
       - PROXY_ADDRESS_FORWARDING=true
       - KEYCLOAK_LOGLEVEL=INFO
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=admin@45Yh5S
+      - KEYCLOAK_USER=${KEYCLOAK_ADMIN_USER}
+      - KEYCLOAK_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
     networks:
       parser_network:
     # labels:
