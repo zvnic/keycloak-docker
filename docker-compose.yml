@@ -1,0 +1,46 @@
+version: "3.4"
+
+services:
+  keycloak_db:
+    image: postgres:11.2-alpine
+    environment:
+        - POSTGRES_DB=keycloak
+        - POSTGRES_USER=keycloak
+        - POSTGRES_PASSWORD=keycloak
+        - POSTGRES_ROOT_PASSWORD=root
+    networks:
+      parser_network:
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    # labels:
+    #   - "traefik.enable=false"
+
+  keycloak:
+    image: jboss/keycloak:latest
+    hostname: keycloak
+    ports:
+      - 9990:8080
+    environment:
+      - DB_VENDOR=POSTGRES
+      - DB_ADDR=keycloak_db
+      - DB_DATABASE=keycloak
+      - DB_PORT=5432
+      - DB_USER=keycloak
+      - DB_SCHEMA=public
+      - DB_PASSWORD=keycloak
+      - PROXY_ADDRESS_FORWARDING=true
+      - KEYCLOAK_LOGLEVEL=INFO
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin@45Yh5S
+    networks:
+      parser_network:
+    # labels:
+    #   - traefik.port=8443
+    #   - traefik.frontend.rule=Host:auth.datavendor.com
+    #   - traefik.protocol=https
+    command: ["-b", "0.0.0.0", "-Dkeycloak.profile.feature.docker=enabled"]
+
+
+networks:
+  parser_network:
+    driver: bridge
