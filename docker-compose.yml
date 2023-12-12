@@ -19,7 +19,7 @@ services:
     image: jboss/keycloak:latest
     hostname: keycloak
     ports:
-      - 9990:8080
+      - "8443:8443"  # Используем порт 8443 для HTTPS
     environment:
       - DB_VENDOR=POSTGRES
       - DB_ADDR=keycloak_db
@@ -39,7 +39,9 @@ services:
     #   - traefik.frontend.rule=Host:auth.datavendor.com
     #   - traefik.protocol=https
     command: ["-b", "0.0.0.0", "-Dkeycloak.profile.feature.docker=enabled"]
-
+    volumes:
+      - ./server.crt:/etc/x509/https/tls.crt  # Путь к вашему SSL-сертификату
+      - ./server.key:/etc/x509/https/tls.key  # Путь к вашему SSL-ключу
 
 networks:
   parser_network:
