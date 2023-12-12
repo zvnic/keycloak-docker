@@ -4,16 +4,14 @@ services:
   keycloak_db:
     image: postgres:11.2-alpine
     environment:
-        - POSTGRES_DB=keycloak
-        - POSTGRES_USER=keycloak
-        - POSTGRES_PASSWORD=keycloak
-        - POSTGRES_ROOT_PASSWORD=root
+        - POSTGRES_DB=${POSTGRES_DATABASE}
+        - POSTGRES_USER=${POSTGRES_USER}
+        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        - POSTGRES_ROOT_PASSWORD=${POSTGRES_ROOT_PASSWORD}
     networks:
       parser_network:
     volumes:
       - ./data:/var/lib/postgresql/data
-    # labels:
-    #   - "traefik.enable=false"
 
   keycloak:
     image: jboss/keycloak:latest
@@ -23,21 +21,17 @@ services:
     environment:
       - DB_VENDOR=POSTGRES
       - DB_ADDR=keycloak_db
-      - DB_DATABASE=keycloak
-      - DB_PORT=5432
-      - DB_USER=keycloak
+      - DB_DATABASE=${POSTGRES_DATABASE}
+      - DB_PORT=${POSTGRES_PORT}
+      - DB_USER=${POSTGRES_USER}
       - DB_SCHEMA=public
-      - DB_PASSWORD=keycloak
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
       - PROXY_ADDRESS_FORWARDING=true
       - KEYCLOAK_LOGLEVEL=INFO
       - KEYCLOAK_USER=${KEYCLOAK_ADMIN_USER}
       - KEYCLOAK_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
     networks:
       parser_network:
-    # labels:
-    #   - traefik.port=8443
-    #   - traefik.frontend.rule=Host:auth.datavendor.com
-    #   - traefik.protocol=https
     command: ["-b", "0.0.0.0", "-Dkeycloak.profile.feature.docker=enabled"]
     volumes:
       - ./server.crt:/etc/x509/https/tls.crt  # Путь к вашему SSL-сертификату
